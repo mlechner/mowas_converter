@@ -82,17 +82,22 @@ def mowascontents2geojson(mowascontents):
 def mowasgeom2geojsongeom(mowasgeom, geomtype):
     coordlist = [[]]
     mwgeomlist = mowasgeom.split(" ")
-    for g in mwgeomlist:
-        if "," in g:
-            lon,lat = g.split(",")
-            coordlist[0].append((float(lon), float(lat)))
     if geomtype == "polygon":
+        for g in mwgeomlist:
+            lon, lat = g.split(",")
+            coordlist[0].append((float(lon), float(lat)))
         mwpolygon = geojson.Polygon(coordlist)
         if not mwpolygon.is_valid:
             print mwpolygon.errors()
         result = mwpolygon
-    # FIXME this is not corrcet yet
+    # FIXME this is not correct yet
+    # haha and they canged lonlat to latlon
     elif geomtype == "point":
+        for g in mwgeomlist:
+            if "," in g:
+                lon, lat = g.split(",")
+                coordlist[0].append((float(lat), float(lon)))
+
         mwpoint = geojson.Point(coordlist[0][0])
         if not mwpoint.is_valid:
             print mwpoint.errors()
