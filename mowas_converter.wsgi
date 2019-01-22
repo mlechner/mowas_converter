@@ -1,7 +1,7 @@
 import sys
 
-PYENV_DIR = '/data/mowas_converter/venv'
-PROJECT_DIR = '/data/mowas_converter/'
+PYENV_DIR = '/opt/mowas_converter/venv'
+PROJECT_DIR = '/opt/mowas_converter/'
 
 activate_this = PYENV_DIR + '/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))

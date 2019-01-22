@@ -9,8 +9,8 @@ In an Linux environment install it is recommended to run mowas converter in an p
 Generate and activate python virtualenv
 
 ```sh
-virtualenv /data/mowas_converter/venv
-source /data/mowas_converter/venv/bin/activate
+virtualenv venv
+source ./venv/bin/activate
 ```
 
 Install requirements
@@ -19,7 +19,7 @@ Install requirements
 pip install -r requirements.txt
 ```
 
-Run confapp
+Run mowas_converter
 
 ```sh
 python mowas_converter.py
