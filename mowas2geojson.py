@@ -67,7 +67,11 @@ def mowascontents2geojson(mowascontents):
         for mwm in mowasjson:
             feature = f_template
             # only one entry per level?
-            feature["geometry"] = mowasgeom2geojsongeom(mwm["info"][0]["area"][0]["polygon"][0])
+            # FIXME check for geomtype ("polygon" in "area" or "circle"...
+            if isinstance(mwm["info"][0]["area"], list) and "polygon" in mwm["info"][0]["area"][0]:
+                feature["geometry"] = mowasgeom2geojsongeom(mwm["info"][0]["area"][0]["polygon"][0], "polygon")
+            elif "circle" in mwm["info"][0]["area"]:
+                feature["geometry"] = mowasgeom2geojsongeom(mwm["info"][0]["area"]["circle"], "point")
             for property in mwm:
                 feature["properties"][property] = mwm[property]
             geojson["features"].append(feature)
@@ -75,13 +79,22 @@ def mowascontents2geojson(mowascontents):
 
     return geojson
 
-def mowasgeom2geojsongeom(mowasgeom):
+def mowasgeom2geojsongeom(mowasgeom, geomtype):
     coordlist = [[]]
     mwgeomlist = mowasgeom.split(" ")
     for g in mwgeomlist:
-        lon,lat = g.split(",")
-        coordlist[0].append((float(lon), float(lat)))
-    mwpolygon = geojson.Polygon(coordlist)
-    if not mwpolygon.is_valid:
-        print mwpolygon.errors()
-    return mwpolygon
+        if "," in g:
+            lon,lat = g.split(",")
+            coordlist[0].append((float(lon), float(lat)))
+    if geomtype == "polygon":
+        mwpolygon = geojson.Polygon(coordlist)
+        if not mwpolygon.is_valid:
+            print mwpolygon.errors()
+        result = mwpolygon
+    # FIXME this is not corrcet yet
+    elif geomtype == "point":
+        mwpoint = geojson.Point(coordlist[0][0])
+        if not mwpoint.is_valid:
+            print mwpoint.errors()
+        result = mwpoint
+    return result
