@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import jsonify
+from flask import request
 from flask import abort
 from flask_cors import cross_origin
 from os import path
@@ -40,6 +41,20 @@ f_template = {
     },
     "properties": {}
 }
+
+
+@cross_origin()
+@mowas2geojson.route('/mowas_converter/urls', methods=['GET'])
+@mowas2geojson.route('/mowasconverter/urls', methods=['GET'])
+def get_mowas_urls():
+    urlsbase = request.base_url[:-len("/urls")] if request.base_url.endswith("/urls") else request.base_url
+    mowasurls = {}
+    for key in urls.keys():
+        if urls[key].startswith('http'):
+            mowasurls[key] = urls[key]
+        else:
+            mowasurls[key] = urlsbase + "/geojson" + urls[key]
+    return jsonify(mowasurls)
 
 
 @cross_origin()
